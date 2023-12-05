@@ -1,0 +1,422 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "SmartManage API",
+    "description": "",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/authenticate": {
+      "post": {
+        "summary": "Authenticate User",
+        "description": "",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string"
+                  },
+                  "password": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Authenticated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "example": "538c8eea-c7f3-4a5b-a155-6e57b3547f99"
+                    },
+                    "token": {
+                      "type": "string",
+                      "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          }
+        }
+      }
+    },
+    "/users": {
+      "post": {
+        "summary": "Create a User",
+        "description": "",
+        "tags": ["Users"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/User"
+              },
+              "examples": {
+                "user": {
+                  "value": {
+                    "name": "John Doe",
+                    "email": "john.doe@email.com",
+                    "password": "pass123",
+                    "role": "fullstack"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "example": "538c8eea-c7f3-4a5b-a155-6e57b3547f99"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "User created successfully"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "List Users",
+        "description": "This route allows you to list all users in the system, optionally filtering by search criteria.",
+        "tags": ["Users"],
+        "parameters": [
+          {
+            "name": "search",
+            "schema": {
+              "type": "string"
+            },
+            "in": "query",
+            "description": "An optional search term to filter users by <b>name</b> or <b>email</b>."
+          },
+          {
+            "name": "page",
+            "schema": {
+              "type": "integer"
+            },
+            "in": "query",
+            "description": "An optional page number for pagination."
+          },
+          {
+            "name": "limit",
+            "schema": {
+              "type": "integer"
+            },
+            "in": "query",
+            "description": "An optional limit to control the number of results per page."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of Users",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "example": "538c8eea-c7f3-4a5b-a155-6e57b3547f99"
+                      },
+                      "name": {
+                        "example": "John Doe"
+                      },
+                      "email": {
+                        "example": "john.doe@email.com"
+                      },
+                      "role": {
+                        "example": "fullstack"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
+        }
+      }
+    },
+    "/users/{id}": {
+      "get": {
+        "security": [{ "bearerAuth": [] }],
+        "summary": "Retrieve User by ID",
+        "description": "This endpoint allows you to retrieve user details by specifying the user's unique ID.",
+        "tags": ["Users"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "The unique ID of the user you want to retrieve."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User details retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "example": "538c8eea-c7f3-4a5b-a155-6e57b3547f99"
+                    },
+                    "name": {
+                      "example": "John Doe"
+                    },
+                    "email": {
+                      "example": "john.doe@email.com"
+                    },
+                    "role": {
+                      "example": "fullstack"
+                    },
+                    "projects": {
+                      "example": [
+                        {
+                          "id": "538c8eea-c7f3-4a5b-a155-6e57b3547f99",
+                          "name": "Fake project name",
+                          "description": "Fake project description"
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      }
+    },
+    "/projects": {
+      "get": {
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "List Projects",
+        "description": "This route allows you to list all user projects.",
+        "tags": ["Projects"],
+        "responses": {
+          "200": {
+            "description": "List of Projects",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "example": "538c8eea-c7f3-4a5b-a155-6e57b3547f99"
+                      },
+                      "name": {
+                        "example": "Fake project name"
+                      },
+                      "description": {
+                        "example": "Fake project description"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
+        }
+      },
+      "post": {
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Create a Project",
+        "description": "",
+        "tags": ["Projects"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "description": {
+                    "type": "string"
+                  },
+                  "membersId": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                }
+              },
+              "examples": {
+                "project": {
+                  "value": {
+                    "name": "Fake project name",
+                    "description": "Fake project description",
+                    "membersId": [
+                      "bb894d36-2fc1-45ca-bb9d-06d8222ecd17",
+                      "483393de-f5ba-4651-be91-877913a6e2be"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "example": "538c8eea-c7f3-4a5b-a155-6e57b3547f99"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Project created successfully"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "responses": {
+      "BadRequest": {
+        "description": "Bad Request"
+      },
+      "Unauthorized": {
+        "description": "Unauthorized"
+      },
+      "NotFound": {
+        "description": "Resource not found"
+      }
+    },
+
+    "schemas": {
+      "User": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          },
+          "role": {
+            "$ref": "#/components/schemas/UserRole"
+          }
+        }
+      },
+      "UserRole": {
+        "type": "string",
+        "enum": ["frontend", "backend", "fullstack", "manager", "productOwner"]
+      },
+      "Project": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "members": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/User"
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  }
+}
